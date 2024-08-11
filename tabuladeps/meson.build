@@ -12,7 +12,7 @@ if stage == 'one'
     subproject('freetype2')
     subproject('glib')
 elif stage == 'two'
-    subproject('libffi')
+    subproject('libffi')  # glib has an optional libffi dependency; maybe move this to stage one?
     subproject('icu', default_options: 'cpp_std=c++14')
     subproject('harfbuzz', default_options: 'tests=disabled')
 elif stage == 'three'
