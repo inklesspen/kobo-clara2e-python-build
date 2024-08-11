@@ -30,12 +30,12 @@ FROM setup-stage as build-stage
 
 # Build Python for host (needed for cross-compile)
 
-ADD --chown=builder:builder https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz .
-RUN echo "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1  Python-3.12.3.tar.xz" | shasum -a 256 --check -
+ADD --chown=builder:builder https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tar.xz .
+RUN echo "fa8a2e12c5e620b09f53e65bcd87550d2e5a1e2e04bf8ba991dcc55113876397  Python-3.12.5.tar.xz" | shasum -a 256 --check -
 
-RUN tar xf Python-3.12.3.tar.xz && rm Python-3.12.3.tar.xz
+RUN tar xf Python-3.12.5.tar.xz && rm Python-3.12.5.tar.xz
 
-RUN cd Python-3.12.3 && \
+RUN cd Python-3.12.5 && \
     mkdir -p build/host && \
     cd build/host && \
     ../../configure --prefix=/home/builder/tc/python3.12 && make -j$(nproc) && make install
@@ -43,20 +43,7 @@ RUN cd Python-3.12.3 && \
 RUN /home/builder/tc/python3.12/bin/pip3.12 install --upgrade pip && \
     /home/builder/tc/python3.12/bin/pip3.12 install meson packaging crossenv python-magic pyelftools
 
-ADD --chown=builder:builder https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tar.xz .
-RUN echo "9b1e896523fc510691126c864406d9360a3d1e986acbda59cda57b5abda45b87  Python-3.11.9.tar.xz" | shasum -a 256 --check -
-
-RUN tar xf Python-3.11.9.tar.xz && rm Python-3.11.9.tar.xz
-
-RUN cd Python-3.11.9 && \
-    mkdir -p build/host && \
-    cd build/host && \
-    ../../configure --prefix=/home/builder/tc/python3.11 && make -j$(nproc) && make install
-
-RUN /home/builder/tc/python3.11/bin/pip3.11 install --upgrade pip && \
-    /home/builder/tc/python3.11/bin/pip3.11 install meson packaging crossenv python-magic pyelftools
-
-ENV PATH="/home/builder/tc/arm-kobo-linux-gnueabihf/bin:/home/builder/tc/python3.11/bin:${PATH}"
+ENV PATH="/home/builder/tc/arm-kobo-linux-gnueabihf/bin:/home/builder/tc/python3.12/bin:${PATH}"
 ENV INSTALL_PREFIX=/opt/tabula
 ENV CROSS_TRIPLET=arm-kobo-linux-gnueabihf
 ENV SYSROOT_DIR=/home/builder/tc/${CROSS_TRIPLET}/${CROSS_TRIPLET}/sysroot
@@ -171,7 +158,7 @@ RUN . tc/compile-envs && cd libevent-2.1.12-stable && \
 #     ./configure --build=aarch64-linux-gnu --host=${CROSS_TRIPLET}  --prefix="${INSTALL_PREFIX}" && \
 #     make && DESTDIR=${SYSROOT_DIR} make install && cd .. && rm -rf tmux-3.4
 
-RUN . tc/compile-envs && cd Python-3.11.9 && \
+RUN . tc/compile-envs && cd Python-3.12.5 && \
     mkdir -p build/kobo && \
     cd build/kobo && \
     ../../configure \
@@ -182,14 +169,14 @@ RUN . tc/compile-envs && cd Python-3.11.9 && \
         --disable-test-modules \
         --without-doc-strings \
         --enable-shared \
-        --with-build-python=/home/builder/tc/python3.11/bin/python3.11 \
+        --with-build-python=/home/builder/tc/python3.12/bin/python3.12 \
         --with-readline=readline \
         LDFLAGS="${LDFLAGS} -L${SYSROOT_DIR}${INSTALL_PREFIX}/lib" \
         CPPFLAGS="-I${SYSROOT_DIR}${INSTALL_PREFIX}/include" \
         ac_cv_file__dev_ptmx=yes ac_cv_file__dev_ptc=no && \
     make -j$(nproc) && \
     DESTDIR=${SYSROOT_DIR} make install
-#&& cd ../../.. && rm -rf Python-3.12.3
+#&& cd ../../.. && rm -rf Python-3.12.5
 
 ADD --chown=builder:builder https://www.freedesktop.org/software/libevdev/libevdev-1.13.2.tar.xz .
 RUN tar xf libevdev-1.13.2.tar.xz && rm libevdev-1.13.2.tar.xz
@@ -203,41 +190,41 @@ RUN cd libevdev-1.13.2 && meson rewrite kwargs set target libevdev-events instal
 # Copy terminfo into the tabula directory
 RUN cd tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot && cp -a usr/share/terminfo opt/tabula/share/ && cp -a usr/lib/terminfo opt/tabula/lib
 
-RUN python3.11 -m crossenv --config-var CC='arm-kobo-linux-gnueabihf-gcc' --config-var CFLAGS="-std=gnu11 -I$SYSROOT_DIR/opt/tabula/include/python3.11" --machine armv7l \
-    --sysroot ${SYSROOT_DIR} ${SYSROOT_DIR}/opt/tabula/bin/python3.11 cross_venv
+RUN python3.12 -m crossenv --config-var CC='arm-kobo-linux-gnueabihf-gcc' --config-var CFLAGS='-std=gnu11' --machine armv7l \
+    --manylinux cp312-cp312-manylinux_2_19_armv7l --manylinux cp312-cp312-manylinux_2_18_armv7l \
+    --manylinux cp312-cp312-manylinux_2_17_armv7l --manylinux cp312-cp312-manylinux2014_armv7l \
+    --manylinux cp312-abi3-manylinux_2_19_armv7l --manylinux cp312-abi3-manylinux_2_18_armv7l \
+    --manylinux cp312-abi3-manylinux_2_17_armv7l --manylinux cp312-abi3-manylinux2014_armv7l \
+    --sysroot ${SYSROOT_DIR} ${SYSROOT_DIR}/opt/tabula/bin/python3.12 cross_venv
 
 ADD --chown=builder:builder requirements.txt .
-RUN . cross_venv/bin/activate && build-pip install cffi build Cython meson-python setuptools wheel && \
-    cross-expose setuptools wheel cffi build Cython pycparser && \
+RUN . cross_venv/bin/activate && build-pip install cffi build Cython meson-python && \
+    echo "cffi" >> /home/builder/cross_venv/lib/exposed.txt && \
+    echo "build" >> /home/builder/cross_venv/lib/exposed.txt && \
+    echo "Cython" >> /home/builder/cross_venv/lib/exposed.txt && \
     cross-pip wheel -w pydeps -r requirements.txt --no-binary SQLAlchemy && \
     truncate -s 0 /home/builder/cross_venv/lib/exposed.txt
 # Gotta force it to download the tarball for SQLAlchemy so we get the c extensions built
 
 COPY --chown=builder:builder tabula-0.1.tar.gz .
-# RUN tar xf tabula-0.1.tar.gz && rm tabula-0.1.tar.gz
 
-RUN . cross_venv/bin/activate && cross-expose setuptools wheel cffi build meson-python && \
-    cross-pip wheel --no-deps -w pydeps -Csetup-args="--cross-file=/home/builder/tc/cross-arm-kobo.txt" tabula-0.1.tar.gz
-
-# RUN . cross_venv/bin/activate && pip install build meson-python cffi && cd tabula-0.1 && \
-#     python -m build -w -n -Csetup-args="--cross-file=/home/builder/tc/cross-arm-kobo.txt" && \
-#     cp dist/tabula-0.1-cp311-cp311-linux_armv7l.whl ../pydeps
+RUN . cross_venv/bin/activate && cross-pip wheel --no-deps -w pydeps -Csetup-args="--cross-file=/home/builder/tc/cross-arm-kobo.txt" tabula-0.1.tar.gz && rm tabula-0.1.tar.gz
 
 ADD --chown=builder:builder --chmod=777 https://astral.sh/uv/install.sh .
-RUN CARGO_HOME=tc/python3.11 ./install.sh --no-modify-path && rm install.sh
+RUN CARGO_HOME=tc/python3.12 ./install.sh --no-modify-path && rm install.sh
 # RUN tar xf uv-aarch64-unknown-linux-gnu.tar.gz && rm uv-aarch64-unknown-linux-gnu.tar.gz
 RUN uv pip install -v --offline --no-cache -f pydeps/ \
-    --python tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/bin/python3.11 \
+    --python tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/bin/python3.12 \
     --system --compile-bytecode tabula
 
 # Unfortunately py-spy doesn't support Python 3.12 yet
-RUN uv pip install -v --python tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/bin/python3.11 --system py-spy
+# RUN uv pip install -v --python tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/bin/python3.12 --system py-spy
 
 RUN mkdir -p tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/modules
 COPY --chown=builder:builder uhid.ko tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/modules/
 
 COPY --chown=builder:builder process-sysroot.py .
-RUN /home/builder/tc/python3.12/bin/python3.12 process-sysroot.py
+RUN python3.12 process-sysroot.py
 
 
 # We're not going to do this anymore because it's very slow when compressed and pointless when not compressed.

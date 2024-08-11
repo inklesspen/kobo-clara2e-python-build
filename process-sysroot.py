@@ -21,15 +21,15 @@ LIB_DIRS = [
 
 SEED_PATHS = [
     TABULAROOT / "bin" / "python3",
-    TABULAROOT / "bin" / "python3.11",
-    TABULAROOT / "lib" / "python3.11",
+    TABULAROOT / "bin" / "python3.12",
+    TABULAROOT / "lib" / "python3.12",
     TABULAROOT / "bin" / "fbink",
     TABULAROOT / "lib" / "libevdev.so",
     TABULAROOT / "bin" / "libevdev-events",
     TABULAROOT / "bin" / "libevdev-list-codes",
     TABULAROOT / "share" / "terminfo",
     # TABULAROOT / "lib" / "terminfo",  # symlink to share/terminfo
-    TABULAROOT / "bin" / "py-spy",
+    # TABULAROOT / "bin" / "py-spy",
     TABULAROOT / "modules" / "uhid.ko",
 ]
 
