@@ -1,0 +1,8 @@
+[wrap-git]
+url = https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git
+revision = 051304c49aa1e5a445238b4cf2594ea3ff7f2341
+depth = 1
+patch_directory=i2c-tools
+
+[provide]
+dependency_names = i2c

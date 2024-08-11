@@ -1,0 +1,37 @@
+[constants]
+compile_args = ['-ffast-math', '-march=armv7-a', '-mfpu=neon', '-mfloat-abi=hard', '-mthumb', '-pipe', '-fomit-frame-pointer', '-frename-registers', '-fweb']
+link_args = ['-Wl,-O1', '-Wl,--as-needed'] + compile_args
+sysroot_dir = '/home/builder/tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot'
+
+[binaries]
+# Compilers
+c = ['arm-kobo-linux-gnueabihf-gcc']
+cpp = ['arm-kobo-linux-gnueabihf-g++']
+
+# Other binaries
+ar = ['arm-kobo-linux-gnueabihf-gcc-ar']
+pkg-config = ['pkg-config']
+ranlib = ['arm-kobo-linux-gnueabihf-gcc-ranlib']
+strip = ['arm-kobo-linux-gnueabihf-strip']
+exe_wrapper = 'qemu-arm-static'
+
+[built-in options]
+c_std = 'c99'
+c_args = compile_args
+c_link_args = link_args
+cpp_args = compile_args
+cpp_link_args = link_args
+
+[properties]
+pkg_config_path = '/home/builder/tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/lib/pkgconfig'
+pkg_config_libdir = '/home/builder/tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/opt/tabula/lib/pkgconfig:/home/builder/tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/usr/lib/pkgconfig:/home/builder/tc/arm-kobo-linux-gnueabihf/arm-kobo-linux-gnueabihf/sysroot/usr/share/pkgconfig'
+sys_root = sysroot_dir
+needs_exe_wrapper = true
+
+[host_machine]
+cpu = 'arm7hlf'
+cpu_family = 'arm'
+endian = 'little'
+system = 'linux'
+subsystem = 'linux'
+kernel = 'linux'

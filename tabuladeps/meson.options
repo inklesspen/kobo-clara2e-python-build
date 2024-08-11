@@ -1,0 +1,1 @@
+option('stage', type: 'combo', choices: ['one', 'two', 'three'], value: 'one')

@@ -1,0 +1,56 @@
+option(
+    'device',
+    type: 'combo',
+    choices: [
+        'kindle',
+        'cervantes',
+        'generic-linux',
+        'kobo',
+        'remarkable',
+        'pocketbook',
+    ],
+    value: 'kobo',
+)
+# features: https://mesonbuild.com/Reference-manual_returned_feature.html
+option(
+    'draw',
+    type: 'feature',
+    value: 'auto',
+    description: 'Add drawing primitives',
+)
+option(
+    'bitmap_fonts',
+    type: 'feature',
+    value: 'auto',
+    description: 'Add fixed-cell font support',
+)
+option(
+    'extra_fonts',
+    type: 'feature',
+    value: 'auto',
+    description: 'Add even more fixed-cell fonts',
+)
+option(
+    'unifont',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Add GNU Unifont and bloat up the binary size',
+)
+option(
+    'image',
+    type: 'feature',
+    value: 'auto',
+    description: 'Add image support',
+)
+option(
+    'opentype',
+    type: 'feature',
+    value: 'auto',
+    description: 'Add OTF/TTF rendering support',
+)
+option(
+    'button_scan',
+    type: 'feature',
+    value: 'auto',
+    description: 'Add Kobo-specific button scan support',
+)

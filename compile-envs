@@ -1,0 +1,19 @@
+export ARCH_FLAGS="-march=armv7-a -mfpu=neon -mfloat-abi=hard -mthumb"
+export CFLAGS="-O3 -ffast-math ${ARCH_FLAGS} -pipe -fomit-frame-pointer -frename-registers -fweb"
+export CXXFLAGS="${CFLAGS}"
+export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
+
+export CT_XLDD_ROOT=${SYSROOT_DIR}
+export QEMU_LD_PREFIX=${SYSROOT_DIR}
+export QEMU_SET_ENV="LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib"
+
+export CC=${CROSS_TRIPLET}-gcc
+export CXX=${CROSS_TRIPLET}-g++
+export STRIP=${CROSS_TRIPLET}-strip
+export AR=${CROSS_TRIPLET}-gcc-ar
+export RANLIB=${CROSS_TRIPLET}-gcc-ranlib
+
+export PKG_CONFIG=pkg-config
+export PKG_CONFIG_PATH=${SYSROOT_DIR}${INSTALL_PREFIX}/lib/pkgconfig
+export PKG_CONFIG_LIBDIR=${SYSROOT_DIR}${INSTALL_PREFIX}/lib/pkgconfig:${SYSROOT_DIR}/usr/lib/pkgconfig:${SYSROOT_DIR}/usr/share/pkgconfig
+export PKG_CONFIG_SYSROOT_DIR=${SYSROOT_DIR}
